@@ -118,10 +118,6 @@ func (r *MemoryRepository) ArchiveBookmark(ctx context.Context, bookmarkID strin
 }
 
 func (r *MemoryRepository) BuildReport(ctx context.Context) (ReportData, error) {
-	if err := ctx.Err(); err != nil {
-		return ReportData{}, err
-	}
-
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 	result := ReportData{

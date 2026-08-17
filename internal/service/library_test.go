@@ -64,3 +64,18 @@ func TestLibraryRejectsDuplicateWithinCollection(t *testing.T) {
 		t.Fatalf("expected duplicate error, got %v", err)
 	}
 }
+
+func TestLibraryStopsReportWhenRequestIsCanceled(t *testing.T) {
+	t.Parallel()
+	library := service.NewLibrary(store.NewMemoryRepository())
+	ctx := context.Background()
+	if _, err := library.CreateCollection(ctx, "Reading"); err != nil {
+		t.Fatal(err)
+	}
+
+	canceled, cancel := context.WithCancel(ctx)
+	cancel()
+	if _, err := library.BuildReport(canceled); !errors.Is(err, context.Canceled) {
+		t.Fatalf("expected canceled report, got %v", err)
+	}
+}
