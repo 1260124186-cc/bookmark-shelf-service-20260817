@@ -61,7 +61,7 @@ func (r *MemoryRepository) SaveBookmark(ctx context.Context, bookmark domain.Boo
 			return domain.ErrDuplicateBookmark
 		}
 	}
-	r.bookmarks[bookmark.ID] = bookmark.Clone()
+	r.bookmarks[bookmark.ID] = bookmark
 	return nil
 }
 

@@ -64,3 +64,27 @@ func TestLibraryRejectsDuplicateWithinCollection(t *testing.T) {
 		t.Fatalf("expected duplicate error, got %v", err)
 	}
 }
+
+func TestLibraryKeepsNormalizedTagsAfterCallerReusesInput(t *testing.T) {
+	t.Parallel()
+	library := service.NewLibrary(store.NewMemoryRepository())
+	ctx := context.Background()
+	collection, err := library.CreateCollection(ctx, "Research")
+	if err != nil {
+		t.Fatal(err)
+	}
+	tags := []string{" Go ", "reference", "go"}
+	bookmark, err := library.SaveBookmark(ctx, service.BookmarkInput{
+		CollectionID: collection.ID,
+		URL:          "https://example.com/go",
+		Title:        "Go",
+		Tags:         tags,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	tags[0] = "changed"
+	if bookmark.Tags[0] != "go" || len(bookmark.Tags) != 2 {
+		t.Fatalf("unexpected returned tags: %#v", bookmark.Tags)
+	}
+}
