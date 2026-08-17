@@ -1,0 +1,12 @@
+.git
+.codex
+.agents
+tasks
+registries
+*.patch
+*.log
+*.test
+bin
+dist
+coverage
+BUG_REPRO.md
