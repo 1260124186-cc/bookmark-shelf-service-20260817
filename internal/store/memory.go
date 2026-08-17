@@ -74,7 +74,7 @@ func (r *MemoryRepository) GetBookmark(ctx context.Context, bookmarkID string) (
 	defer r.mu.RUnlock()
 	bookmark, exists := r.bookmarks[bookmarkID]
 	if !exists {
-		return domain.Bookmark{}, nil
+		return domain.Bookmark{}, domain.ErrBookmarkNotFound
 	}
 	return bookmark.Clone(), nil
 }
@@ -107,7 +107,7 @@ func (r *MemoryRepository) ArchiveBookmark(ctx context.Context, bookmarkID strin
 	defer r.mu.Unlock()
 	bookmark, exists := r.bookmarks[bookmarkID]
 	if !exists {
-		return domain.Bookmark{}, nil
+		return domain.Bookmark{}, domain.ErrBookmarkNotFound
 	}
 	if bookmark.ArchivedAt == nil {
 		now := time.Now().UTC()
