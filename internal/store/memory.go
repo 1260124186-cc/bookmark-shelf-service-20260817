@@ -61,6 +61,9 @@ func (r *MemoryRepository) SaveBookmark(ctx context.Context, bookmark domain.Boo
 			return domain.ErrDuplicateBookmark
 		}
 	}
+	// 存储前重新规范化并复制标签切片，使书签持有独立数据，
+	// 隔离调用方后续对原切片的修改。
+	bookmark.Tags = domain.NormalizeTags(bookmark.Tags)
 	r.bookmarks[bookmark.ID] = bookmark
 	return nil
 }
