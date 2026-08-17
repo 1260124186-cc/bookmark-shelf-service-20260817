@@ -71,7 +71,7 @@ func (l *Library) ArchiveBookmark(ctx context.Context, bookmarkID string) (domai
 }
 
 func (l *Library) BuildReport(ctx context.Context) (Report, error) {
-	data, err := l.repository.BuildReport(context.Background())
+	data, err := l.repository.BuildReport(ctx)
 	if err != nil {
 		return Report{}, err
 	}

@@ -118,6 +118,10 @@ func (r *MemoryRepository) ArchiveBookmark(ctx context.Context, bookmarkID strin
 }
 
 func (r *MemoryRepository) BuildReport(ctx context.Context) (ReportData, error) {
+	if err := ctx.Err(); err != nil {
+		return ReportData{}, err
+	}
+
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 	result := ReportData{
@@ -125,9 +129,15 @@ func (r *MemoryRepository) BuildReport(ctx context.Context) (ReportData, error) 
 		Bookmarks:   make([]domain.Bookmark, 0, len(r.bookmarks)),
 	}
 	for _, collection := range r.collections {
+		if err := ctx.Err(); err != nil {
+			return ReportData{}, err
+		}
 		result.Collections = append(result.Collections, collection)
 	}
 	for _, bookmark := range r.bookmarks {
+		if err := ctx.Err(); err != nil {
+			return ReportData{}, err
+		}
 		result.Bookmarks = append(result.Bookmarks, bookmark.Clone())
 	}
 	return result, nil
