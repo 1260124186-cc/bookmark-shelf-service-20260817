@@ -53,12 +53,14 @@ func (r *MemoryRepository) SaveBookmark(ctx context.Context, bookmark domain.Boo
 
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	// 收藏夹不存在时明确提示缺失，避免与重复链接混淆
 	if _, exists := r.collections[bookmark.CollectionID]; !exists {
 		return domain.ErrCollectionNotFound
 	}
+	// 同一收藏夹内重复链接提示冲突
 	for _, existing := range r.bookmarks {
 		if existing.CollectionID == bookmark.CollectionID && existing.URL == bookmark.URL {
-			return domain.ErrCollectionNotFound
+			return domain.ErrDuplicateBookmark
 		}
 	}
 	r.bookmarks[bookmark.ID] = bookmark.Clone()
