@@ -33,6 +33,24 @@ func TestHTTPWorkflow(t *testing.T) {
 	}
 }
 
+func TestHTTPDistinguishesDuplicateAndMissingCollection(t *testing.T) {
+	t.Parallel()
+	handler := transport.NewHandler(service.NewLibrary(store.NewMemoryRepository()))
+
+	if response := request(t, handler, http.MethodPost, "/collections", `{"name":"Work"}`); response.Code != http.StatusCreated {
+		t.Fatalf("collection status = %d", response.Code)
+	}
+	if response := request(t, handler, http.MethodPost, "/bookmarks", `{"collection_id":"collection-001","url":"https://example.com/a","title":"A"}`); response.Code != http.StatusCreated {
+		t.Fatalf("first bookmark status = %d", response.Code)
+	}
+	if response := request(t, handler, http.MethodPost, "/bookmarks", `{"collection_id":"collection-001","url":"https://example.com/a","title":"A again"}`); response.Code != http.StatusConflict {
+		t.Fatalf("duplicate status = %d", response.Code)
+	}
+	if response := request(t, handler, http.MethodPost, "/bookmarks", `{"collection_id":"collection-404","url":"https://example.com/b","title":"B"}`); response.Code != http.StatusNotFound {
+		t.Fatalf("missing collection status = %d", response.Code)
+	}
+}
+
 func request(t *testing.T, handler http.Handler, method, path, body string) *httptest.ResponseRecorder {
 	t.Helper()
 	req := httptest.NewRequest(method, path, bytes.NewBufferString(body))
