@@ -117,9 +117,9 @@ func writeError(w http.ResponseWriter, err error) {
 	switch {
 	case errors.Is(err, domain.ErrInvalidBookmark), errors.Is(err, domain.ErrInvalidCollection):
 		writeJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
-	case errors.Is(err, domain.ErrBookmarkNotFound):
+	case errors.Is(err, domain.ErrBookmarkNotFound), errors.Is(err, domain.ErrCollectionNotFound):
 		writeJSON(w, http.StatusNotFound, map[string]string{"error": err.Error()})
-	case errors.Is(err, domain.ErrDuplicateBookmark), errors.Is(err, domain.ErrCollectionNotFound):
+	case errors.Is(err, domain.ErrDuplicateBookmark):
 		writeJSON(w, http.StatusConflict, map[string]string{"error": err.Error()})
 	case errors.Is(err, context.Canceled), errors.Is(err, context.DeadlineExceeded):
 		writeJSON(w, http.StatusRequestTimeout, map[string]string{"error": "request canceled"})

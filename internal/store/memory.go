@@ -58,7 +58,7 @@ func (r *MemoryRepository) SaveBookmark(ctx context.Context, bookmark domain.Boo
 	}
 	for _, existing := range r.bookmarks {
 		if existing.CollectionID == bookmark.CollectionID && existing.URL == bookmark.URL {
-			return domain.ErrCollectionNotFound
+			return domain.ErrDuplicateBookmark
 		}
 	}
 	r.bookmarks[bookmark.ID] = bookmark.Clone()
