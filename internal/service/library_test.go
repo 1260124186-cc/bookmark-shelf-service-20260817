@@ -64,3 +64,12 @@ func TestLibraryRejectsDuplicateWithinCollection(t *testing.T) {
 		t.Fatalf("expected duplicate error, got %v", err)
 	}
 }
+
+func TestLibraryReturnsAnErrorWhenArchivingUnknownBookmark(t *testing.T) {
+	t.Parallel()
+	library := service.NewLibrary(store.NewMemoryRepository())
+	_, err := library.ArchiveBookmark(context.Background(), "bookmark-missing")
+	if !errors.Is(err, domain.ErrBookmarkNotFound) {
+		t.Fatalf("expected missing bookmark error, got %v", err)
+	}
+}

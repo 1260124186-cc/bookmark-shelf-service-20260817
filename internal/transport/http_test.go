@@ -33,6 +33,15 @@ func TestHTTPWorkflow(t *testing.T) {
 	}
 }
 
+func TestHTTPReturnsNotFoundForUnknownBookmarkArchive(t *testing.T) {
+	t.Parallel()
+	handler := transport.NewHandler(service.NewLibrary(store.NewMemoryRepository()))
+	response := request(t, handler, http.MethodPost, "/bookmarks/bookmark-missing/archive", "")
+	if response.Code != http.StatusNotFound {
+		t.Fatalf("archive missing status = %d", response.Code)
+	}
+}
+
 func request(t *testing.T, handler http.Handler, method, path, body string) *httptest.ResponseRecorder {
 	t.Helper()
 	req := httptest.NewRequest(method, path, bytes.NewBufferString(body))
