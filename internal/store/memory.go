@@ -104,7 +104,6 @@ func (r *MemoryRepository) ArchiveBookmark(ctx context.Context, bookmarkID strin
 	}
 
 	r.mu.Lock()
-	defer r.mu.Unlock()
 	bookmark, exists := r.bookmarks[bookmarkID]
 	if !exists {
 		return domain.Bookmark{}, domain.ErrBookmarkNotFound
@@ -114,6 +113,7 @@ func (r *MemoryRepository) ArchiveBookmark(ctx context.Context, bookmarkID strin
 		bookmark.ArchivedAt = &now
 		r.bookmarks[bookmarkID] = bookmark
 	}
+	r.mu.Unlock()
 	return bookmark.Clone(), nil
 }
 
